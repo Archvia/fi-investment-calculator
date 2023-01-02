@@ -1,86 +1,85 @@
-
 let value = 10;
 let startAmount = 0;
 let monthlyAmount = 1000;
-language = "EN" // CONFIG: Change this to DA for the danish page
+const language = document.getElementById("language").innerHTML;
 
 const currencies = {
-usd : {
+  usd : {
     startAmount : {defaultValue: 5000, minValue: 0, maxValue: 10000},
     monthlyAmount: {defaultValue: 1000, minValue: 100, maxValue: 5500},
-},
-eur : {
+  },
+  eur : {
     startAmount : {defaultValue: 3000, minValue: 0, maxValue: 6000},
     monthlyAmount: {defaultValue: 1000, minValue: 200, maxValue: 5000},
-},
-gbp : {
+  },
+  gbp : {
     startAmount : {defaultValue: 3000, minValue: 0, maxValue: 6000},
     monthlyAmount: {defaultValue: 1000, minValue: 200, maxValue: 5000},
-},
-dkk : {
+  },
+  dkk : {
     startAmount : {defaultValue: 30000, minValue: 0, maxValue: 75000},
     monthlyAmount: {defaultValue: 8000, minValue: 1000, maxValue: 35000},
-}
+  }
 };
 
 
 // set up danish
 if(language == "DA"){
-const investmentHorizonTextElement = document.getElementById("investment-horizon-text");
-investmentHorizonTextElement.innerHTML = "Investeringshorisont";
-const startingAmountTextElement = document.getElementById("starting-amount-text");
-startingAmountTextElement.innerHTML = "Nuværende opsparing";
-const monthlyInvestmentTextElement = document.getElementById("monthly-investment-text");
-monthlyInvestmentTextElement.innerHTML = "Månedlig investering";
-const savingTextElement = document.getElementById("saving-text");
-savingTextElement.innerHTML = "Opsparet";
-const investingTextElement = document.getElementById("investing-text");
-investingTextElement.innerHTML = "Investeret";
-const chooseCurrencyTextElement = document.getElementById("choose-currency-text");
-chooseCurrencyTextElement.innerHTML = "Vælg din valuta";
+  const investmentHorizonTextElement = document.getElementById("investment-horizon-text");
+  investmentHorizonTextElement.innerHTML = "Investeringshorisont";
+  const startingAmountTextElement = document.getElementById("starting-amount-text");
+  startingAmountTextElement.innerHTML = "Nuværende opsparing";
+  const monthlyInvestmentTextElement = document.getElementById("monthly-investment-text");
+  monthlyInvestmentTextElement.innerHTML = "Månedlig investering";
+  const savingTextElement = document.getElementById("saving-text");
+  savingTextElement.innerHTML = "Opsparet";
+  const investingTextElement = document.getElementById("investing-text");
+  investingTextElement.innerHTML = "Investeret";
+  const chooseCurrencyTextElement = document.getElementById("choose-currency-text");
+  chooseCurrencyTextElement.innerHTML = "Vælg din valuta";
 }
 
 
-let currentCurrency = 'EUR'; // CONFIG: Change this to "GBP" for GB page and "DKK" for danish page
+let currentCurrency = document.getElementById("currentCurrency").innerHTML;; 
 let selectedCurrencyElement = document.getElementById(`${currentCurrency}-currency`);
 selectedCurrencyElement.classList.add("selected");
 
 document.querySelector(".currencies").addEventListener("click", (event) => {
-if(!event.target.classList.contains("currency")) return;
-event.stopPropagation();
-selectedCurrencyElement.classList.remove("selected")
-event.target.classList.add("selected")
-selectedCurrencyElement = event.target;
+  if(!event.target.classList.contains("currency")) return;
+  event.stopPropagation();
+  selectedCurrencyElement.classList.remove("selected")
+  event.target.classList.add("selected")
+  selectedCurrencyElement = event.target;
 })
 
 const formatAmount = (number) => {
-let v = number.toString();
-const chunks = [];
-for(let i = v.length; i > 0; i -= 3) {
+  let v = number.toString();
+  const chunks = [];
+  for(let i = v.length; i > 0; i -= 3) {
     const s = v.substring(i-3, i)
     if(chunks.length) chunks.unshift(" ");
     chunks.unshift(s);
-}
-return "".concat.apply("", chunks)
+  }
+  return "".concat.apply("", chunks)
 }
 
 const setCurrency = (currency) => {
-currentCurrency = currency;
+  currentCurrency = currency;
 
-const {startAmount, monthlyAmount} = currencies[currency.toLowerCase()];
-const startAmountSlider = document.getElementById("startAmount");
-startAmountSlider.min = startAmount.minValue;
-startAmountSlider.max = startAmount.maxValue;
-startAmountSlider.value = startAmount.defaultValue;
+  const {startAmount, monthlyAmount} = currencies[currency.toLowerCase()];
+  const startAmountSlider = document.getElementById("startAmount");
+  startAmountSlider.min = startAmount.minValue;
+  startAmountSlider.max = startAmount.maxValue;
+  startAmountSlider.value = startAmount.defaultValue;
+  
+  const monthlyAmountSlider = document.getElementById("monthlyAmount");
+  monthlyAmountSlider.min = monthlyAmount.minValue;
+  monthlyAmountSlider.max = monthlyAmount.maxValue;
+  monthlyAmountSlider.value = monthlyAmount.defaultValue;
 
-const monthlyAmountSlider = document.getElementById("monthlyAmount");
-monthlyAmountSlider.min = monthlyAmount.minValue;
-monthlyAmountSlider.max = monthlyAmount.maxValue;
-monthlyAmountSlider.value = monthlyAmount.defaultValue;
-
-updateHorizonSlider();
-updateStartAmountSlider();
-updateMonthlyAmountSlider();
+  updateHorizonSlider();
+  updateStartAmountSlider();
+  updateMonthlyAmountSlider();
 }
 
 let chart;
@@ -93,21 +92,21 @@ Chart.defaults.font.family = "'Inter'";
 Chart.defaults.font.size = 14;
 
 function createRadialGradient3(context, c1, c3) {
-const cache = new Map();
-let width = null;
-let height = null;
-const chartArea = context.chart.chartArea;
-if (!chartArea) {
+  const cache = new Map();
+  let width = null;
+  let height = null;
+  const chartArea = context.chart.chartArea;
+  if (!chartArea) {
     // This case happens on initial chart load
     return;
-}
-const chartWidth = chartArea.right - chartArea.left;
-const chartHeight = chartArea.bottom - chartArea.top;
-if (width !== chartWidth || height !== chartHeight) {
+  }
+  const chartWidth = chartArea.right - chartArea.left;
+  const chartHeight = chartArea.bottom - chartArea.top;
+  if (width !== chartWidth || height !== chartHeight) {
     cache.clear();
-}
-let gradient = cache.get(c1 + c3);
-if (!gradient) {
+  }
+  let gradient = cache.get(c1 + c3);
+  if (!gradient) {
     // Create the gradient because this is either the first render
     // or the size of the chart has changed
     width = chartWidth;
@@ -115,113 +114,113 @@ if (!gradient) {
     const centerX = (chartArea.left + chartArea.right) /1.9; // 1,9
     const centerY = (chartArea.top + chartArea.bottom) / 10; //3,5
     const r = Math.min(
-    (chartArea.right - chartArea.left) / 0.9,
-    (chartArea.bottom - chartArea.top) / 0.9,
+      (chartArea.right - chartArea.left) / 0.9,
+      (chartArea.bottom - chartArea.top) / 0.9,
     );
     const ctx = context.chart.ctx;
     gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, r);
     gradient.addColorStop(0, c1);
     gradient.addColorStop(1, c3);
     cache.set(c1 + c3, gradient);
-}
-return gradient;
+  }
+  return gradient;
 }
 
 const calculateReturn = (rate, years, initialDeposit, monthlyDeposit, yearStep) => {
-let accumulator = parseInt(initialDeposit);
-const yValues = [accumulator];
-for (var year = 1; year <= years; year++) {
+  let accumulator = parseInt(initialDeposit);
+  const yValues = [accumulator];
+  for (var year = 1; year <= years; year++) {
     accumulator = (accumulator + 12 * monthlyDeposit) * rate;
     if (year % yearStep == 0) {
-    yValues.push(accumulator);
+      yValues.push(accumulator);
     }
-}
-return yValues;
+  }
+  return yValues;
 };
 
 const makeChart = () => {
-// Create data
-let labels = [];
-let investmentValues = []
-let savingValues = []
+  // Create data
+  let labels = [];
+  let investmentValues = []
+  let savingValues = []
 
-for(let i= 0; i <= value; i+=5 ){
+  for(let i= 0; i <= value; i+=5 ){
     labels.push(i)
     savingValues.push(startAmount + (monthlyAmount * i * 12));
-}
-investmentValues = calculateReturn(1.08, value, startAmount, monthlyAmount, 5)
+  }
+  investmentValues = calculateReturn(1.08, value, startAmount, monthlyAmount, 5)
 
-const data = {
+  const data = {
     labels: labels,
     datasets: [
-    {
+      {
         label: `saving`,
         data: savingValues,
         fill: false,
         borderColor: 'white',
         borderWidth: 2,
         borderDash: [10]
-    },
-    {
+      },
+      {
         label: `investing`,
         data: investmentValues,
         fill: true,
         showLine: false,
         // backgroundColor: (ctx) => createRadialGradient3(ctx, 'rgba(13, 122, 129, 0.4)', "#EEFF86"), use this for new brand colors
         backgroundColor: (ctx) => createRadialGradient3(ctx, 'rgba(254, 181, 134, 0.4)', "#B0BDC2"),
-    },
+      },
     ]
-};
+  };
 
-// Create legends
-const investLegendValueElement = document.getElementById('invest-legend-value');
-const investLegendValue = Math.floor(investmentValues[investmentValues.length -1]).toString();
-const formattedInvestLegendValue = formatAmount(investLegendValue);
-investLegendValueElement.innerHTML = `${currentCurrency} ${formattedInvestLegendValue}`;
+  // Create legends
+  const investLegendValueElement = document.getElementById('invest-legend-value');
+  const investLegendValue = Math.floor(investmentValues[investmentValues.length -1]).toString();
+  const formattedInvestLegendValue = formatAmount(investLegendValue);
+  investLegendValueElement.innerHTML = `${currentCurrency} ${formattedInvestLegendValue}`;
 
-const saveLegendValueElement = document.getElementById('save-legend-value');
-const saveLegendValue = Math.floor(savingValues[savingValues.length -1]).toString();
-const formattedSaveLegendValue = formatAmount(saveLegendValue);
-saveLegendValueElement.innerHTML = `${currentCurrency} ${formattedSaveLegendValue}`;
-const locale = language === "DA" ? "da-DK": "en-US"
+  const saveLegendValueElement = document.getElementById('save-legend-value');
+  const saveLegendValue = Math.floor(savingValues[savingValues.length -1]).toString();
+  const formattedSaveLegendValue = formatAmount(saveLegendValue);
+  saveLegendValueElement.innerHTML = `${currentCurrency} ${formattedSaveLegendValue}`;
+  const locale = language === "DA" ? "da-DK": "en-US"
 
-// Create chart
-chart = new Chart(ctx, {
+  // Create chart
+  chart = new Chart(ctx, {
     type: 'line',
     data: data,
     options: {
-    locale: locale,
-    plugins: {
+      locale: locale,
+      plugins: {
         legend: {
-        display: false,
+          display: false,
         }
-    },
-    animation: false,
-    pointRadius: 0, // disables points
-    scales: {
+      },
+      animation: false,
+      pointRadius: 0, // disables points
+      scales: {
         x: {
-        grid: {
+          grid: {
             display: false
-        }, 
-        display: false
+          }, 
+          display: false
         },
         y: {
-        min: 0,
+          min: 0,
         }
-    },
+      },
     }
-});
+  });
 }
 
 makeChart();
 
 // Set up sliders
 const setUpSlider = (id, f, unitType) => {
-const slider = document.getElementById(id);
-const rangeText = slider.parentElement.querySelector('.range-text');
-const minSize = 58, maxSize = 99;
+  const slider = document.getElementById(id);
+  const rangeText = slider.parentElement.querySelector('.range-text');
+  const minSize = 58, maxSize = 99;
 
-slider.oninput = function() {  
+  slider.oninput = function() {  
     const minValue = parseInt(slider.min);
     const maxValue = parseInt(slider.max);
 
@@ -239,14 +238,14 @@ slider.oninput = function() {
     slider.style.setProperty(`--${id}-offset`, `${expectedCenter - currentCenter}px`);
 
     if(unitType == "currency"){
-    rangeText.innerHTML = `${this.value} ${currentCurrency}`; //Set range text equal to input position
+      rangeText.innerHTML = `${this.value} ${currentCurrency}`; //Set range text equal to input position
     } else {
-    if(language == "DA"){
+      if(language == "DA"){
         rangeText.innerHTML = `${this.value} År`; //Set range text equal to input position
 
-    } else {
+      } else {
         rangeText.innerHTML = `${this.value} Years`; //Set range text equal to input position
-    }
+      }
     }
     rangeText.style["font-size"] = '12px';
     rangeText.style.width = "initial"
@@ -256,9 +255,9 @@ slider.oninput = function() {
 
     chart.destroy()
     makeChart();
-};
-slider.oninput()
-return slider.oninput.bind(slider);
+  };
+  slider.oninput()
+  return slider.oninput.bind(slider);
 };
 
 updateHorizonSlider = setUpSlider("horizon", (v) => value = v, "");
